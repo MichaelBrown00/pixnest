@@ -3,16 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PixNest</title>
+  <title>PixNest – Free Image Hosting</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  <h1>PixNest – Image Upload Test</h1>
+  <div class="container">
+    <header class="header">
+      <img src="logo.png" class="logo" alt="PixNest">
+      <h1>PixNest</h1>
+      <button id="darkModeBtn">Dark Mode</button>
+    </header>
 
-  <input type="file" id="imageInput" accept="image/*" />
-  <button id="uploadBtn">Upload</button>
+    <section class="upload-box">
+      <input type="file" id="imageInput" accept="image/*" />
+      <button id="uploadBtn">Upload Image</button>
 
-  <pre id="output"></pre>
+      <p id="uploadStatus"></p>
+
+      <img id="previewImg" />
+    </section>
+  </div>
 
   <script src="script.js"></script>
 </body>
