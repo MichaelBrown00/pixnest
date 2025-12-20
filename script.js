@@ -1,43 +1,66 @@
-const darkBtn = document.getElementById("darkModeBtn");
+const fileInput = document.getElementById("imageInput");
 const uploadBtn = document.getElementById("uploadBtn");
-const input = document.getElementById("imageInput");
-const status = document.getElementById("uploadStatus");
-const preview = document.getElementById("previewImg");
+const statusText = document.getElementById("uploadStatus");
+const darkModeBtn = document.getElementById("darkModeBtn");
 
-darkBtn.onclick = () => {
+let selectedFile = null;
+
+/* ---------- Dark Mode ---------- */
+darkModeBtn.addEventListener("click", () => {
   document.body.classList.toggle("dark");
-};
+});
 
-uploadBtn.onclick = async () => {
-  const file = input.files[0];
-  if (!file) {
-    alert("Choose an image first");
+/* ---------- File Selection ---------- */
+fileInput.addEventListener("change", () => {
+  selectedFile = fileInput.files[0];
+});
+
+/* ---------- Upload ---------- */
+uploadBtn.addEventListener("click", async () => {
+  if (!selectedFile) {
+    statusText.textContent = "Please select an image first.";
     return;
   }
 
-  const formData = new FormData();
-  formData.append("file", file);
+  statusText.textContent = "Uploading… please wait.";
 
-  status.innerText = "Uploading...";
+  const reader = new FileReader();
 
-  try {
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: formData
-    });
+  reader.onloadend = async () => {
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          image: reader.result,
+        }),
+      });
 
-    const data = await res.json();
+      // Handle non-JSON responses safely
+      const text = await response.text();
 
-    if (!data.secure_url) {
-      status.innerText = "Upload failed";
-      return;
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error("Server returned invalid response");
+      }
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Upload failed");
+      }
+
+      statusText.innerHTML = `
+        ✅ Upload successful<br>
+        <a href="${data.url}" target="_blank">View Image</a>
+      `;
+    } catch (err) {
+      console.error(err);
+      statusText.textContent = "❌ Error uploading image";
     }
+  };
 
-    preview.src = data.secure_url;
-    preview.style.display = "block";
-    status.innerText = "Upload successful!";
-  } catch (err) {
-    console.error(err);
-    status.innerText = "Error uploading image";
-  }
-};
+  reader.readAsDataURL(selectedFile);
+});
