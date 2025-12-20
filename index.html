@@ -4,27 +4,52 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PixNest – Free Image Hosting</title>
+
   <link rel="stylesheet" href="style.css" />
 </head>
+<body class="dark">
 
-<body>
   <div class="container">
+
+    <!-- Header -->
     <header class="header">
-      <img src="logo.png" class="logo" alt="PixNest">
-      <h1>PixNest</h1>
-      <button id="darkModeBtn">Dark Mode</button>
+      <div class="brand">
+        <img src="logo.png" alt="PixNest Logo" class="logo" />
+      </div>
+
+      <button id="darkModeBtn" class="small-btn">
+        Dark Mode
+      </button>
     </header>
 
-    <section class="upload-box">
-      <input type="file" id="imageInput" accept="image/*" />
-      <button id="uploadBtn">Upload Image</button>
+    <!-- Upload Card -->
+    <main>
+      <section class="upload-card">
 
-      <p id="uploadStatus"></p>
+        <input
+          type="file"
+          id="imageInput"
+          accept="image/*"
+        />
 
-      <img id="previewImg" />
-    </section>
+        <button id="uploadBtn" class="primary-btn">
+          Upload Image
+        </button>
+
+        <div id="uploadStatus" class="status-text"></div>
+
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <small>PixNest • Powered by Cloudinary</small>
+    </footer>
+
   </div>
 
+  <!-- Script -->
   <script src="script.js"></script>
+
 </body>
 </html>

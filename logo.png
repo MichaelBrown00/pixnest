@@ -1,0 +1,7 @@
+<svg width="160" height="40" viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg">
+  <rect width="40" height="40" rx="8" fill="#0f172a"></rect>
+  <circle cx="20" cy="20" r="10" fill="#38bdf8"></circle>
+  <text x="55" y="27" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" fill="#e5e7eb">
+    PixNest
+  </text>
+</svg>
