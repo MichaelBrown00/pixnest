@@ -1,44 +1,62 @@
-import { v2 as cloudinary } from "cloudinary";
+import cloudinary from "cloudinary";
+import formidable from "formidable";
+import fs from "fs";
 
 export const config = {
   api: {
-    bodyParser: {
-      sizeLimit: "10mb", // VERY IMPORTANT
-    },
+    bodyParser: false,
   },
 };
 
-cloudinary.config({
+// Cloudinary config (SERVER ONLY)
+cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 export default async function handler(req, res) {
+  // Allow only POST
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  try {
-    const { image } = req.body;
+  // Ensure env vars exist
+  if (
+    !process.env.CLOUDINARY_CLOUD_NAME ||
+    !process.env.CLOUDINARY_API_KEY ||
+    !process.env.CLOUDINARY_API_SECRET
+  ) {
+    return res.status(500).json({ error: "Cloudinary env vars missing" });
+  }
 
-    if (!image) {
-      return res.status(400).json({ error: "No image provided" });
+  const form = formidable({ multiples: false });
+
+  try {
+    const [fields, files] = await form.parse(req);
+
+    if (!files.file) {
+      return res.status(400).json({ error: "No file uploaded" });
     }
 
-    const result = await cloudinary.uploader.upload(image, {
-      folder: "pixnest",
-    });
+    const upload = await cloudinary.v2.uploader.upload(
+      files.file.filepath,
+      {
+        folder: "pixnest",
+        resource_type: "image",
+      }
+    );
+
+    // Clean temp file
+    fs.unlinkSync(files.file.filepath);
 
     return res.status(200).json({
       success: true,
-      url: result.secure_url,
+      url: upload.secure_url,
+      public_id: upload.public_id,
     });
   } catch (err) {
     console.error("UPLOAD ERROR:", err);
-    return res.status(500).json({
-      error: "Upload failed",
-      message: err.message,
-    });
+    return res.status(500).json({ error: "Upload failed" });
   }
 }
